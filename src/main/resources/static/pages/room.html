@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Music Room</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/room.css"
+    >
+
+</head>
+
+<body>
+
+<div class="room-container">
+
+    <div class="room-card">
+
+        <h1>🎵 SyncWave Room</h1>
+
+        <h2 id="roomDisplay"></h2>
+
+        <div class="video-section">
+
+            <input
+                type="text"
+                id="videoId"
+                placeholder="Enter YouTube Video ID"
+            >
+
+            <button onclick="loadVideo()">
+                Load Music
+            </button>
+
+        </div>
+
+        <div id="player"></div>
+
+        <div class="controls">
+
+            <button onclick="playVideo()">
+                ▶ Play
+            </button>
+
+            <button onclick="pauseVideo()">
+                ⏸ Pause
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="../js/room.js"></script>
+
+</body>
+</html>
