@@ -64,31 +64,6 @@ body {
     margin-bottom: 25px;
 }
 
-.video-section {
-
-    display: flex;
-
-    gap: 15px;
-
-    margin-bottom: 25px;
-}
-
-.video-section input {
-
-    flex: 1;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background: rgba(255,255,255,0.08);
-
-    color: white;
-
-    outline: none;
-}
 
 button {
 
@@ -127,4 +102,111 @@ button {
     border-radius: 20px;
 
     overflow: hidden;
+}
+
+.queue-section {
+
+    margin-top: 40px;
+
+    text-align: left;
+}
+
+.add-song {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.add-song input {
+
+    flex: 1;
+}
+
+#queueList {
+
+    margin-top: 20px;
+}
+
+.queue-item {
+
+    padding: 15px;
+
+    background: rgba(255,255,255,0.05);
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+}
+.search-section {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 30px;
+}
+
+#searchResults {
+
+    margin-top: 20px;
+}
+
+.song-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    background: rgba(255,255,255,0.05);
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+}
+
+.song-card img {
+
+    width: 120px;
+
+    border-radius: 10px;
+}
+
+.song-info {
+
+    flex: 1;
+}
+
+.queue-item {
+
+    padding: 15px;
+
+    background: rgba(255,255,255,0.05);
+
+    border-radius: 10px;
+
+    margin-bottom: 10px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.queue-item:hover {
+
+    background: rgba(255,255,255,0.1);
+}
+.upload-section {
+
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 30px;
 }

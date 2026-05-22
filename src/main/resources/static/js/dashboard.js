@@ -3,10 +3,7 @@ const API =
 
 async function createRoom() {
 
-    const token =
-        localStorage.getItem(
-            "token"
-        );
+    const token = localStorage.getItem("token");
 
     if(!token) {
 
@@ -19,8 +16,7 @@ async function createRoom() {
 
     try {
 
-        const response = await fetch(
-            `${API}/room/create`,
+        const response = await fetch(`${API}/room/create`,
             {
                 method: "POST",
 
@@ -33,22 +29,17 @@ async function createRoom() {
 
         if(response.ok) {
 
-            const room =
-                await response.json();
+            const room = await response.json();
 
             alert(
-                "Room Created: " +
-                room.roomCode
+                "Room Created: " +  room.roomCode
             );
 
-            window.location.href =
-                `room.html?roomCode=${room.roomCode}`;
+            window.location.href = `room.html?roomCode=${room.roomCode}`;
 
         } else {
 
-            alert(
-                "Room Creation Failed"
-            );
+            alert("Room Creation Failed");
         }
 
     } catch(error) {
@@ -59,20 +50,15 @@ async function createRoom() {
 
 async function joinRoom() {
 
-    const token =
-        localStorage.getItem(
+    const token = localStorage.getItem(
             "token"
         );
 
-    const roomCode =
-        document.getElementById(
-            "roomCode"
-        ).value;
+    const roomCode = document.getElementById("roomCode").value.trim();
 
     try {
 
-        const response = await fetch(
-            `${API}/room/join/${roomCode}`,
+        const response = await fetch(`${API}/room/join/${roomCode}`,
             {
                 method: "POST",
 
@@ -83,15 +69,13 @@ async function joinRoom() {
             }
         );
 
-        const message =
-            await response.text();
+        const message = await response.text();
 
         alert(message);
 
         if(response.ok) {
 
-            window.location.href =
-                `room.html?roomCode=${roomCode}`;
+            window.location.href = `room.html?roomCode=${roomCode}`;
         }
 
     } catch(error) {

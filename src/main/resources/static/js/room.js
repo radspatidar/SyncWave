@@ -1,49 +1,37 @@
-let player;
+const API =
+    "http://localhost:8080";
 
 let stompClient = null;
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+const audioPlayer = document.getElementById("audioPlayer");
 
-const roomCode =
-    params.get("roomCode");
+const params = new URLSearchParams(window.location.search);
 
-document.getElementById(
-    "roomDisplay"
-).innerText =
-    "Room Code: " + roomCode;
+const roomCode = params.get("roomCode");
+
+document.getElementById("roomDisplay").innerText ="Room Code: " + roomCode;
 
 connectWebSocket();
 
+loadQueue();
+
 function connectWebSocket() {
 
-    const socket =
-        new SockJS(
-            "http://localhost:8080/ws"
-        );
+    const socket = new SockJS("http://localhost:8080/ws");
 
-    stompClient =
-        Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect(
         {},
         function() {
 
-            console.log(
-                "WebSocket Connected"
-            );
+            console.log("WebSocket Connected");
 
-            stompClient.subscribe(
-                `/topic/room/${roomCode}`,
+            stompClient.subscribe(`/topic/room/${roomCode}`,
 
                 function(message) {
 
-                    const data =
-                        JSON.parse(
-                            message.body
-                        );
+                    const data = JSON.parse(message.body);
 
                     handleMusicEvent(data);
                 }
@@ -52,29 +40,18 @@ function connectWebSocket() {
     );
 }
 
-function sendMusicEvent(
-        action,
-        videoId = null
-) {
-
-    let currentTime = 0;
-
-    if(player && player.getCurrentTime) {
-
-        currentTime =
-            player.getCurrentTime();
-    }
+function sendMusicEvent(action, audioUrl = null) {
 
     const event = {
 
         roomCode,
         action,
-        videoId,
-        currentTime
+        audioUrl,
+        currentTime:
+            audioPlayer.currentTime
     };
 
-    stompClient.send(
-        "/app/music.sync",
+    stompClient.send("/app/music.sync",
 
         {},
 
@@ -82,89 +59,117 @@ function sendMusicEvent(
     );
 }
 
-function onYouTubeIframeAPIReady() {
+function playAudio() {
 
-    player = new YT.Player(
-        "player",
-        {
-            height: "450",
-
-            width: "100%",
-
-            videoId: "jfKfPfyJRdk",
-
-            playerVars: {
-                autoplay: 0
-            }
-        }
-    );
-}
-
-function loadVideo() {
-
-    const videoId =
-        document.getElementById(
-            "videoId"
-        ).value;
-
-    player.loadVideoById(
-        videoId
-    );
-
-    sendMusicEvent(
-        "LOAD",
-        videoId
-    );
-}
-
-function playVideo() {
-
-    player.playVideo();
+    audioPlayer.play();
 
     sendMusicEvent("PLAY");
 }
 
-function pauseVideo() {
+function pauseAudio() {
 
-    player.pauseVideo();
+    audioPlayer.pause();
 
     sendMusicEvent("PAUSE");
 }
 
 function handleMusicEvent(data) {
 
-    console.log(data);
-
     switch(data.action) {
 
         case "PLAY":
 
-            player.seekTo(
-                data.currentTime,
-                true
-            );
+            audioPlayer.currentTime = data.currentTime;
 
-            player.playVideo();
+            audioPlayer.play();
 
             break;
 
         case "PAUSE":
 
-            player.seekTo(
-                data.currentTime,
-                true
-            );
+            audioPlayer.currentTime = data.currentTime;
 
-            player.pauseVideo();
+            audioPlayer.pause();
 
             break;
 
         case "LOAD":
 
-            player.loadVideoById(
-                data.videoId
-            );
+            audioPlayer.src = data.audioUrl;
+
+            audioPlayer.play();
 
             break;
     }
+}
+
+async function loadQueue() {
+
+    const response = await fetch(`${API}/queue/${roomCode}`);
+
+    const songs = await response.json();
+
+    const queueList = document.getElementById("queueList");
+
+    queueList.innerHTML = "";
+
+    songs.forEach(song => {
+
+        queueList.innerHTML += `
+
+            <div
+                class="queue-item"
+                onclick="
+                    playQueueSong(
+                        '${song.audioUrl}'
+                    )
+                "
+            >
+
+                ${song.position}.
+                ${song.title}
+
+            </div>
+        `;
+    });
+}
+
+function playQueueSong(audioUrl) {
+
+    audioPlayer.src = "audioUrl";;
+
+    audioPlayer.play();
+
+    sendMusicEvent(
+        "LOAD",
+        audioUrl
+    );
+}
+
+async function uploadSong() {
+
+    const title = document.getElementById("songTitle").value;
+
+    const file = document.getElementById("songFile").files[0];
+
+    const formData = new FormData();
+
+    formData.append("title",title);
+
+    formData.append("file",file);
+
+    const response = await fetch("http://localhost:8080/songs/upload",
+
+        {
+            method: "POST",
+
+            body: formData
+        }
+    );
+
+    const song = await response.json();
+
+    console.log(song);
+
+    alert("Song Uploaded Successfully");
 }

@@ -29,33 +29,88 @@
 
         <h2 id="roomDisplay"></h2>
 
-        <div class="video-section">
+        <div class="upload-section">
 
-            <input
-                type="text"
-                id="videoId"
-                placeholder="Enter YouTube Video ID"
-            >
+    <input
+        type="text"
+        id="songTitle"
+        placeholder="Song Title"
+    >
 
-            <button onclick="loadVideo()">
-                Load Music
-            </button>
+    <input
+        type="file"
+        id="songFile"
+        accept="audio/*"
+    >
 
-        </div>
+    <button onclick="uploadSong()">
+        Upload Song
+    </button>
 
-        <div id="player"></div>
+</div>
 
+        <div class="audio-player-section">
+
+    <audio
+        id="audioPlayer"
+        controls
+    ></audio>
+
+</div>
         <div class="controls">
 
-            <button onclick="playVideo()">
+            <button onclick="playAudio()">
                 ▶ Play
             </button>
 
-            <button onclick="pauseVideo()">
+            <button onclick="pauseAudio()">
                 ⏸ Pause
             </button>
 
         </div>
+        <div class="queue-section">
+     
+
+    <h2>Song Queue</h2>
+    <div class="search-section">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search songs..."
+    >
+
+    <button onclick="searchSongs()">
+        Search
+    </button>
+
+</div>
+
+<div id="searchResults"></div>
+
+    <div class="add-song">
+
+        <input
+            type="text"
+            id="queueVideoId"
+            placeholder="YouTube Video ID"
+        >
+
+        <input
+            type="text"
+            id="queueTitle"
+            placeholder="Song Title"
+        >
+
+        <button onclick="addSongToQueue()">
+            Add Song
+        </button>
+
+    </div>
+
+    <div id="queueList"></div>
+
+</div>
 
     </div>
 
@@ -66,7 +121,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+
 <script src="../js/room.js"></script>
 
 </body>
