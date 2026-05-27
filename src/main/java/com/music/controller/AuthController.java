@@ -1,46 +1,102 @@
 package com.music.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import org.springframework.web.bind.annotation.*;
+
+import com.music.model.Role;
 import com.music.model.User;
+
 import com.music.repository.UserRepository;
+
 import com.music.service.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin("*")
 public class AuthController {
 
-	    @Autowired
-	    private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	    @Autowired
-	    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	    @Autowired
-	    private JwtUtil jwtUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
 
-	    @PostMapping("/signup")
-	    public String signup(@RequestBody User user) {
-	        user.setPassword(passwordEncoder.encode(user.getPassword()));
-	        userRepository.save(user);
-	        return "User registered";
-	    }
+    @PostMapping("/signup")
+    public String signup(@RequestBody User user) {
 
-	    @PostMapping("/login")
-	    public String login(@RequestBody User user) {
+        // Encode password
 
-	        User dbUser = userRepository.findByEmail(user.getEmail())
-	                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword( passwordEncoder.encode(user.getPassword()));
 
-	        if (!passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
-	            throw new RuntimeException("Invalid password");
-	        }
+        // Default role
 
-	        return jwtUtil.generateToken(user.getEmail());
-	    }
+        user.setRole(Role.USER);
+
+        userRepository.save(user);
+
+        return "User Registered";
+    }
+
+    @PostMapping("/login")
+    public Map<String, String> login(
+            @RequestBody User user
+    ) {
+
+        User dbUser = userRepository
+
+                .findByEmail(user.getEmail())
+
+                .orElseThrow(() ->
+
+                        new RuntimeException(
+                                "User not found"
+                        )
+                );
+
+        if(
+
+            !passwordEncoder.matches(
+
+                user.getPassword(),
+
+                dbUser.getPassword()
+            )
+
+        ) {
+
+            throw new RuntimeException(
+                    "Invalid password"
+            );
+        }
+
+        String token =
+
+                jwtUtil.generateToken(
+                        user.getEmail()
+                );
+
+        Map<String, String> response =
+                new HashMap<>();
+
+        response.put(
+                "token",
+                token
+        );
+
+        response.put(
+                "username",
+                dbUser.getUsername()
+        );
+
+        return response;
+    }
 }

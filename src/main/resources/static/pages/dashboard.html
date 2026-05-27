@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
@@ -9,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Dashboard</title>
+    <title>SyncWave Dashboard</title>
 
     <link
         rel="stylesheet"
@@ -22,23 +23,40 @@
 
 <div class="dashboard">
 
-    <h1>Welcome to SyncWave</h1>
+    <h1>🎵 Welcome to SyncWave</h1>
 
-    <button onclick="createRoom()">
-        Create Room
+    <p>
+        Listen together in real time
+    </p>
+
+    <div class="dashboard-actions">
+
+        <button onclick="createRoom()">
+            Create Room
+        </button>
+
+    </div>
+
+    <div class="join-room-section">
+
+        <input
+            type="text"
+            id="roomCode"
+            placeholder="Enter Room Code"
+        >
+
+        <button onclick="joinRoom()">
+            Join Room
+        </button>
+
+    </div>
+
+    <br>
+
+    <button onclick="logout()">
+        Logout
     </button>
-	
-	<br><br>
 
-<input
-    type="text"
-    id="roomCode"
-    placeholder="Enter Room Code"
->
-
-<button onclick="joinRoom()">
-    Join Room
-</button>
 </div>
 
 <script src="../js/dashboard.js"></script>

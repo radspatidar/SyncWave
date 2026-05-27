@@ -1,5 +1,9 @@
 package com.music.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
 public class MusicEvent {
 
 	 private String roomCode;
@@ -8,7 +12,7 @@ public class MusicEvent {
 
 	    private double currentTime;
 
-	    private String songId;
+	    private String audioUrl;
 
 		public String getRoomCode() {
 			return roomCode;
@@ -34,13 +38,15 @@ public class MusicEvent {
 			this.currentTime = currentTime;
 		}
 
-		public String getSongId() {
-			return songId;
+		public String getAudioUrl() {
+			return audioUrl;
 		}
 
-		public void setSongId(String songId) {
-			this.songId = songId;
+		public void setAudioUrl(String audioUrl) {
+			this.audioUrl = audioUrl;
 		}
+
+		
 
 	    
 }

@@ -1,12 +1,17 @@
 package com.music.controller;
 
+import com.music.dto.RoomEvent;
 import com.music.model.*;
 import com.music.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +26,9 @@ public class RoomController {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/create")
     public Room createRoom() {
@@ -51,7 +59,7 @@ public class RoomController {
 
         member.setUserId(user.getId());
 
-        member.setRole("ADMIN");
+        member.setRole("AUTHOR");
 
         roomMemberRepository.save(member);
 
@@ -93,8 +101,49 @@ public class RoomController {
         member.setRole("USER");
 
         roomMemberRepository.save(member);
-
+        
+        List<User> users = roomMemberRepository.findByRoomId(room.getId())
+                .stream()
+                .map(m -> userRepository.findById(m.getUserId()).orElse(null))
+                .toList();
+        
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomCode,
+                new RoomEvent("MEMBERS_UPDATE",users)
+        );
         return "Joined room successfully";
+    }
+    
+    
+    @GetMapping("/members/{roomCode}")
+    public List<User> getRoomMembers(
+            @PathVariable String roomCode
+    ) {
+
+        Room room = roomRepository
+                .findByRoomCode(roomCode)
+                .orElseThrow(() ->
+
+                new RuntimeException(
+                        "Room not found"
+                ));
+
+        List<RoomMember> members =
+                roomMemberRepository.findByRoomId(
+                        room.getId()
+                );
+
+        return members.stream()
+
+                .map(member ->
+
+                    userRepository.findById(
+                        member.getUserId()
+                    ).orElse(null)
+
+                )
+
+                .toList();
     }
     
     
@@ -104,4 +153,38 @@ public class RoomController {
                 .substring(0, 6)
                 .toUpperCase();
     }
+    
+    @PostMapping("/leave/{roomCode}")
+    public String leaveRoom(@PathVariable String roomCode) {
+
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+
+        Room room = roomRepository.findByRoomCode(roomCode)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        roomMemberRepository.deleteByRoomIdAndUserId(
+                room.getId(),
+                user.getId()
+        );
+
+        List<User> users = roomMemberRepository.findByRoomId(room.getId())
+                .stream()
+                .map(m -> userRepository.findById(m.getUserId()).orElse(null))
+                .toList();
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomCode,
+                new RoomEvent("MEMBERS_UPDATE", users)
+          );
+
+        return "Left room successfully";
+    }
+    
+   
 }

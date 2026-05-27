@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Music Room</title>
+    <title>SyncWave Room</title>
 
     <link
         rel="stylesheet"
@@ -25,102 +25,90 @@
 
     <div class="room-card">
 
-        <h1>🎵 SyncWave Room</h1>
+        <!-- HEADER -->
 
-        <h2 id="roomDisplay"></h2>
+        <div class="room-header">
 
-        <div class="upload-section">
+            <div>
 
-    <input
-        type="text"
-        id="songTitle"
-        placeholder="Song Title"
-    >
+                <h1>🎵 SyncWave Room</h1>
 
-    <input
-        type="file"
-        id="songFile"
-        accept="audio/*"
-    >
+                <h2 id="roomDisplay"></h2>
 
-    <button onclick="uploadSong()">
-        Upload Song
-    </button>
+            </div>
 
-</div>
+            <div class="room-actions">
 
-        <div class="audio-player-section">
+                <button onclick="leaveRoom()">
+                   Leave
+                </button>
 
-    <audio
-        id="audioPlayer"
-        controls
-    ></audio>
+                <button onclick="logout()">
+                    Logout
+                </button>
 
-</div>
-        <div class="controls">
+            </div>
 
-            <button onclick="playAudio()">
-                ▶ Play
-            </button>
+        </div>
 
-            <button onclick="pauseAudio()">
-                ⏸ Pause
+        <!-- SEARCH -->
+
+        <div class="song-search">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search Songs"
+            >
+
+            <button onclick="searchSongs()">
+                Search
             </button>
 
         </div>
+
+        <!-- SEARCH RESULTS -->
+
+        <div id="searchResults"></div>
+
+        <!-- AUDIO PLAYER -->
+
+        <div class="audio-player-section">
+
+            <audio
+                id="audioPlayer"
+                controls
+            ></audio>
+
+        </div>
+
+        <!-- MEMBERS -->
+
+        <div class="members-section">
+
+            <h2>👥 Room Members</h2>
+
+            <div id="membersList"></div>
+
+        </div>
+
+        <!-- QUEUE -->
+
         <div class="queue-section">
-     
 
-    <h2>Song Queue</h2>
-    <div class="search-section">
+            <h2>🎶 Song Queue</h2>
 
-    <input
-        type="text"
-        id="searchInput"
-        placeholder="Search songs..."
-    >
+            <div id="queueList"></div>
 
-    <button onclick="searchSongs()">
-        Search
-    </button>
-
-</div>
-
-<div id="searchResults"></div>
-
-    <div class="add-song">
-
-        <input
-            type="text"
-            id="queueVideoId"
-            placeholder="YouTube Video ID"
-        >
-
-        <input
-            type="text"
-            id="queueTitle"
-            placeholder="Song Title"
-        >
-
-        <button onclick="addSongToQueue()">
-            Add Song
-        </button>
-
-    </div>
-
-    <div id="queueList"></div>
-
-</div>
+        </div>
 
     </div>
 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-
 
 <script src="../js/room.js"></script>
 

@@ -1,24 +1,21 @@
-const API_BASE =
-    "http://localhost:8080";
+const API_BASE = "http://localhost:8080";
 
 async function signup(event) {
 
     event.preventDefault();
 
-    const email =
-        document.getElementById(
-            "signupEmail"
-        ).value;
+    const username = document.getElementById("username").value;
 
-    const password =
-        document.getElementById(
-            "signupPassword"
-        ).value;
+    const email = document.getElementById("signupEmail").value;
+
+    const password = document.getElementById("signupPassword").value;
 
     try {
 
         const response = await fetch(
+
             `${API_BASE}/auth/signup`,
+
             {
                 method: "POST",
 
@@ -28,6 +25,8 @@ async function signup(event) {
                 },
 
                 body: JSON.stringify({
+
+                    username,
                     email,
                     password
                 })
@@ -36,18 +35,13 @@ async function signup(event) {
 
         if(response.ok) {
 
-            alert(
-                "Signup Successful"
-            );
+            alert("Signup Successful");
 
-            window.location.href =
-                "login.html";
+            window.location.href = "login.html";
 
         } else {
 
-            alert(
-                "Signup Failed"
-            );
+            alert("Signup Failed");
         }
 
     } catch(error) {
@@ -91,13 +85,18 @@ async function login(event) {
 
         if(response.ok) {
 
-            const token =
-                await response.text();
+			const data =
+			    await response.json();
 
-            localStorage.setItem(
-                "token",
-                token
-            );
+			localStorage.setItem(
+			    "token",
+			    data.token
+			);
+
+			localStorage.setItem(
+			    "username",
+			    data.username
+			);
 
             alert(
                 "Login Successful"

@@ -1,129 +1,301 @@
-const API =
-    "http://localhost:8080";
+const API = "http://localhost:8080";
 
 let stompClient = null;
 
-const audioPlayer = document.getElementById("audioPlayer");
+let isRemoteAction = false;
+let suppressBroadcast = false;
+let currentQueueIndex = 0;
+let currentTrackUrl = "";
 
-const params = new URLSearchParams(window.location.search);
+const audioPlayer =
+    document.getElementById(
+        "audioPlayer"
+    );
 
-const roomCode = params.get("roomCode");
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
 
-document.getElementById("roomDisplay").innerText ="Room Code: " + roomCode;
+const roomCode =
+    params.get("roomCode");
+
+document.getElementById(
+    "roomDisplay"
+).innerText =
+    "Room Code: " + roomCode;
 
 connectWebSocket();
 
 loadQueue();
 
+loadMembers();
+
+// =====================================
+// WEBSOCKET CONNECTION
+// =====================================
+
 function connectWebSocket() {
 
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket =
+        new SockJS(
+            "http://localhost:8080/ws"
+        );
 
-    stompClient = Stomp.over(socket);
+    stompClient =
+        Stomp.over(socket);
 
     stompClient.connect(
+
         {},
-        function() {
 
-            console.log("WebSocket Connected");
+        function () {
 
-            stompClient.subscribe(`/topic/room/${roomCode}`,
+            console.log(
+                "WebSocket Connected"
+            );
 
-                function(message) {
+            stompClient.subscribe(
 
-                    const data = JSON.parse(message.body);
+                `/topic/room/${roomCode}`,
 
-                    handleMusicEvent(data);
+                function (message) {
+
+                    const data =
+                        JSON.parse(
+                            message.body
+                        );
+
+						if (data.action) {
+						       handleMusicEvent(data);
+						   }
+						   if (data.type === "MEMBERS_UPDATE") {
+						       renderMembers(data.users); // no API call needed
+						   }
                 }
             );
         }
     );
 }
 
-function sendMusicEvent(action, audioUrl = null) {
+// =====================================
+// SEND MUSIC EVENT
+// =====================================
 
-    const event = {
+function sendMusicEvent(
+    action,
+    audioUrl = null
+) {
+
+	if(
+
+	    suppressBroadcast
+
+	) return;
+
+    const payload = {
 
         roomCode,
+
         action,
-        audioUrl,
+
+        sender:
+            localStorage.getItem(
+                "username"
+            ),
+
+        audioUrl:
+            audioUrl ||
+            currentTrackUrl,
+
         currentTime:
-            audioPlayer.currentTime
+            audioPlayer.currentTime,
+
+        playing:
+            !audioPlayer.paused
     };
 
-    stompClient.send("/app/music.sync",
+    stompClient.send(
+
+        "/app/music.sync",
 
         {},
 
-        JSON.stringify(event)
+        JSON.stringify(payload)
     );
 }
 
-function playAudio() {
 
-    audioPlayer.play();
-
-    sendMusicEvent("PLAY");
-}
-
-function pauseAudio() {
-
-    audioPlayer.pause();
-
-    sendMusicEvent("PAUSE");
-}
-
+// =====================================
+// HANDLE MUSIC EVENT
+// =====================================
 function handleMusicEvent(data) {
+
+    isRemoteAction = true;
 
     switch(data.action) {
 
+        case "LOAD":
+
+            currentTrackUrl = data.audioUrl;
+
+            if(audioPlayer.src !== data.audioUrl) {
+
+                audioPlayer.src = data.audioUrl;
+            }
+
+            audioPlayer.currentTime =
+                data.currentTime || 0;
+
+            audioPlayer.play()
+                .catch(() => {});
+
+            break;
+
         case "PLAY":
 
-            audioPlayer.currentTime = data.currentTime;
+            audioPlayer.currentTime =
+                data.currentTime;
 
-            audioPlayer.play();
+            audioPlayer.play()
+                .catch(() => {});
 
             break;
 
         case "PAUSE":
 
-            audioPlayer.currentTime = data.currentTime;
+            audioPlayer.pause();
+
+            audioPlayer.currentTime =
+                data.currentTime;
+
+            break;
+
+        case "SEEK":
+
+            if(
+
+                Math.abs(
+                    audioPlayer.currentTime -
+                    data.currentTime
+                ) > 1
+
+            ) {
+
+                audioPlayer.currentTime =
+                    data.currentTime;
+            }
+
+            break;
+
+        case "STOP":
 
             audioPlayer.pause();
 
-            break;
-
-        case "LOAD":
-
-            audioPlayer.src = data.audioUrl;
-
-            audioPlayer.play();
+            audioPlayer.currentTime = 0;
 
             break;
     }
+
+    setTimeout(() => {
+
+        isRemoteAction = false;
+
+    }, 500);
 }
+
+// =====================================
+// SEEK SYNCHRONIZATION
+// =====================================
+
+let seekTimeout = null;
+
+audioPlayer.addEventListener(
+
+    "seeked",
+
+    () => {
+
+        if(isRemoteAction) return;
+
+        clearTimeout(seekTimeout);
+
+        seekTimeout = setTimeout(() => {
+
+            sendMusicEvent(
+                "SEEK"
+            );
+
+        }, 300);
+    }
+);
+
+// =====================================
+// AUTO NEXT SONG
+// =====================================
+
+
+
+audioPlayer.addEventListener(
+
+    "ended",
+
+    () => {
+
+        const queueItems =
+            document.querySelectorAll(
+                ".queue-item"
+            );
+
+        currentQueueIndex++;
+
+        if(
+            currentQueueIndex <
+            queueItems.length
+        ) {
+
+            queueItems[
+                currentQueueIndex
+            ].click();
+        }
+    }
+);
+
+// =====================================
+// LOAD QUEUE
+// =====================================
 
 async function loadQueue() {
 
-    const response = await fetch(`${API}/queue/${roomCode}`);
+    const response =
+        await fetch(
 
-    const songs = await response.json();
+            `${API}/queue/${roomCode}`
+        );
 
-    const queueList = document.getElementById("queueList");
+    const songs =
+        await response.json();
+
+    const queueList =
+        document.getElementById(
+            "queueList"
+        );
 
     queueList.innerHTML = "";
 
-    songs.forEach(song => {
+   songs.forEach((song, index) => {
 
         queueList.innerHTML += `
 
             <div
                 class="queue-item"
-                onclick="
-                    playQueueSong(
-                        '${song.audioUrl}'
-                    )
-                "
+
+				onclick="
+				    playQueueSong(
+				        '${song.audioUrl}',
+				        ${index}
+				    )
+				"
             >
 
                 ${song.position}.
@@ -134,42 +306,225 @@ async function loadQueue() {
     });
 }
 
-function playQueueSong(audioUrl) {
+// =====================================
+// PLAY QUEUE SONG
+// =====================================
 
-    audioPlayer.src = "audioUrl";;
+function playQueueSong(
+    audioUrl,
+    index
+) {
 
-    audioPlayer.play();
+    currentQueueIndex = index;
+
+    currentTrackUrl = audioUrl;
 
     sendMusicEvent(
         "LOAD",
         audioUrl
     );
 }
+// =====================================
+// SEARCH SONGS
+// =====================================
 
-async function uploadSong() {
+async function searchSongs() {
 
-    const title = document.getElementById("songTitle").value;
+    const keyword =
+        document.getElementById(
+            "searchInput"
+        ).value;
 
-    const file = document.getElementById("songFile").files[0];
+    const response =
+        await fetch(
 
-    const formData = new FormData();
+            `${API}/songs/search?keyword=${keyword}`
+        );
 
-    formData.append("title",title);
+    const songs =
+        await response.json();
 
-    formData.append("file",file);
+    const searchResults =
+        document.getElementById(
+            "searchResults"
+        );
 
-    const response = await fetch("http://localhost:8080/songs/upload",
+    searchResults.innerHTML = "";
+
+    songs.forEach(song => {
+
+        searchResults.innerHTML += `
+
+            <div class="song-card">
+
+                <div class="song-info">
+
+                    <h3>
+                        ${song.title}
+                    </h3>
+
+                </div>
+
+                <button
+                    onclick="
+                        addSongToQueue(
+                            ${song.id}
+                        )
+                    "
+                >
+
+                    Add To Queue
+
+                </button>
+
+            </div>
+        `;
+    });
+}
+
+// =====================================
+// ADD SONG TO QUEUE
+// =====================================
+
+async function addSongToQueue(
+    songId
+) {
+
+    await fetch(
+
+        `${API}/queue/add/${roomCode}/${songId}`,
 
         {
-            method: "POST",
-
-            body: formData
+            method: "POST"
         }
     );
 
-    const song = await response.json();
-
-    console.log(song);
-
-    alert("Song Uploaded Successfully");
+    loadQueue();
 }
+
+// =====================================
+// LOAD ROOM MEMBERS
+// =====================================
+
+async function loadMembers() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API}/room/members/${roomCode}`
+            );
+
+        const users =
+            await response.json();
+			console.log(users);
+
+        const membersList =
+            document.getElementById(
+                "membersList"
+            );
+
+        membersList.innerHTML = "";
+
+        users.forEach(user => {
+
+            membersList.innerHTML += `
+
+                <div class="member-item">
+
+                    🟢 ${user.username}
+
+                </div>
+            `;
+        });
+
+    } catch(error) {
+
+        console.log(error);
+    }
+}
+// =====================================
+// EXIT ROOM
+// =====================================
+
+function leaveRoom() {
+
+	fetch(`${API}/room/leave/${roomCode}`, {
+	    method: "POST",
+	    headers: authHeaders()
+	});
+
+    
+    window.location.href = "/pages/dashboard.html";
+}
+
+function authHeaders() {
+    return {
+        "Authorization": "Bearer " + localStorage.getItem("token"),
+        "Content-Type": "application/json"
+    };
+}
+
+// =====================================
+// LOGOUT
+// =====================================
+
+function logout() {
+
+    localStorage.removeItem(
+        "token"
+    );
+
+    localStorage.removeItem(
+        "username"
+    );
+
+    window.location.href =
+        "login.html";
+}
+
+
+audioPlayer.addEventListener(
+    "play",
+    () => {
+
+        if(!isRemoteAction) {
+
+            sendMusicEvent(
+                "PLAY"
+            );
+        }
+    }
+);
+
+audioPlayer.addEventListener(
+    "pause",
+    () => {
+
+        if(!isRemoteAction) {
+
+            sendMusicEvent(
+                "PAUSE"
+            );
+        }
+    }
+);
+
+
+
+function renderMembers(users) {
+
+    const membersList =
+        document.getElementById("membersList");
+
+    membersList.innerHTML = "";
+
+    users.forEach(user => {
+        membersList.innerHTML += `
+            <div class="member-item">
+                🟢 ${user.username}
+            </div>
+        `;
+    });
+}
+

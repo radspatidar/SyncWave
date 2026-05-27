@@ -1,44 +1,71 @@
-const API =
-    "http://localhost:8080";
+const API = "http://localhost:8080";
+
+const CLOUD_NAME = "dinuhmssz";
+
+const UPLOAD_PRESET = "syncwave-audio";
 
 async function uploadSong() {
 
-    const formData =
-        new FormData();
+    const title = document.getElementById("title").value;
 
-    formData.append(
-        "title",
+    const audioFile = document.getElementById("audio").files[0];
 
-        document.getElementById(
-            "title"
-        ).value
-    );
+    // Upload directly to Cloudinary
 
+    const cloudinaryData = new FormData();
 
-    formData.append(
-        "audio",
+    cloudinaryData.append( "file", audioFile );
 
-        document.getElementById(
-            "audio"
-        ).files[0]
-    );
+    cloudinaryData.append("upload_preset",UPLOAD_PRESET);
 
-    const response =
+    cloudinaryData.append( "resource_type", "video");
+
+    alert("Uploading Audio...");
+
+    const cloudinaryResponse =
         await fetch(
-            `${API}/songs/upload`,
+
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
+
             {
                 method: "POST",
 
-                body: formData
+                body: cloudinaryData
             }
         );
 
-    const data =
-        await response.json();
+    const cloudinaryResult = await cloudinaryResponse.json();
+
+    console.log( cloudinaryResult);
+
+    // Get audio URL
+
+    const audioUrl = cloudinaryResult.secure_url;
+
+    // Save metadata to backend
+
+    const response =
+        await fetch(
+            `${API}/songs`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    title,
+                    audioUrl
+                })
+            }
+        );
+
+    const data = await response.json();
 
     console.log(data);
 
-    alert(
-        "Song Uploaded"
-    );
-}
+    alert( "Song Uploaded Successfully");
+}	

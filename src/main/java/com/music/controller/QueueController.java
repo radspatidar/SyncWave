@@ -2,10 +2,12 @@ package com.music.controller;
 
 import com.music.dto.AddSongRequest;
 import com.music.model.Room;
+import com.music.model.Song;
 import com.music.model.SongQueue;
 import com.music.repository.RoomRepository;
 
 import com.music.repository.SongQueueRepository;
+import com.music.repository.SongRepository;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -19,32 +21,38 @@ public class QueueController {
     private final SongQueueRepository queueRepository;
 
     private final RoomRepository roomRepository;
+    
+    private final SongRepository songRepository;
 
-    public QueueController(SongQueueRepository queueRepository,RoomRepository roomRepository) {
+    public QueueController(SongQueueRepository queueRepository, SongRepository songRepository, RoomRepository roomRepository) {
 
         this.queueRepository = queueRepository;
+        
+        this.songRepository = songRepository;
 
         this.roomRepository = roomRepository;
     }
 
-    @PostMapping("/add")
-    public SongQueue addSong(@RequestBody AddSongRequest request) {
+    @PostMapping("/add/{roomCode}/{songId}")
+    public SongQueue addSongToQueue(@PathVariable String roomCode, @PathVariable Long songId) {
 
-        Room room = roomRepository.findByRoomCode(request.getRoomCode()).orElseThrow();
+        Room room = roomRepository.findByRoomCode(roomCode).orElseThrow();
 
+        Song song = songRepository.findById(songId).orElseThrow();
+        
         int nextPosition = queueRepository.findByRoomOrderByPositionAsc(room).size() + 1;
 
-        SongQueue song = new SongQueue();
+        SongQueue queuesong = new SongQueue();
 
-        song.setAudioUrl(request.getAudioUrl());
+        queuesong.setAudioUrl(song.getAudioUrl());
 
-        song.setTitle(request.getTitle());
+        queuesong.setTitle(song.getTitle());
 
-        song.setPosition(nextPosition);
+        queuesong.setPosition(nextPosition);
 
-        song.setRoom(room);
+        queuesong.setRoom(room);
 
-        return queueRepository.save(song);
+        return queueRepository.save(queuesong);
     }
 
     @GetMapping("/{roomCode}")
