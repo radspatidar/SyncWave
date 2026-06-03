@@ -51,6 +51,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtUtil.generateToken(email);
 
-        response.sendRedirect( "http://localhost:8080/pages/oauth-callback.html?token=" + token + "&username=" + user.getUsername() + "&role=" + user.getRole().name());
+        response.sendRedirect( "/pages/oauth-callback.html?token=" + token + "&username=" + user.getUsername() + "&role=" + user.getRole().name());
     }
 }
