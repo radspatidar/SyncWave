@@ -4,18 +4,13 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
 
     <title>SyncWave Login</title>
 
-    <link
-        rel="stylesheet"
-        href="../css/auth.css"
-    >
-
+    <link rel="stylesheet" href="../css/auth.css" >
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 
 <body>
@@ -24,42 +19,78 @@
 
     <div class="card">
 
-        <h1>SyncWave</h1>
+        <div class="logo-section">
 
-        <p>Listen together, stay connected</p>
+		    <div class="logo-icon">
+		        <i class="fa-solid fa-music"></i>
+		    </div>
 
-        <form onsubmit="login(event)">
+    		<h1>SyncWave</h1>
 
-            <input
-                type="email"
-                id="loginEmail"
-                placeholder="Email"
-                required
-            >
+		</div>
 
-            <input
-                type="password"
-                id="loginPassword"
-                placeholder="Password"
-                required
-            >
+		<div class="tabs">
 
-            <button type="submit">
-                Login
-            </button>
+	    <button class="tab active">
+	        Login
+	    </button>
 
-        </form>
+	    <button class="tab" onclick="window.location.href='signup.html'">
+	        Sign Up
+	    </button>
 
-        <div class="bottom-text">
+	</div>
 
-            Don't have an account?
+	<form onsubmit="login(event)">
 
-            <a href="signup.html">
-                Signup
-            </a>
+    <label>Email</label>
 
-        </div>
+    <div class="input-group">
+        <i class="fa-regular fa-envelope"></i>
 
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter your email"
+            required
+        >
+    </div>
+
+    <label>Password</label>
+
+    <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Enter your password"
+            required
+        >
+    </div>
+
+    <button type="submit" class="login-btn">
+        Login
+    </button>
+
+</form>
+<button class="google-btn" onclick="googleLogin()">
+
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="22">
+  
+    Continue with Google
+
+</button>
+
+<div class="bottom-text">
+
+    Don't have an account?
+
+    <a href="signup.html">
+        Sign up
+    </a>
+
+</div>
     </div>
 
 </div>

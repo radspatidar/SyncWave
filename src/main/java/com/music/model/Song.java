@@ -14,10 +14,6 @@ public class Song {
         strategy = GenerationType.IDENTITY
     )
     private Long id;
-   
     private String title;
-
     private String audioUrl;
-
-    // getters setters
 }

@@ -13,8 +13,8 @@ import com.music.model.Role;
 import com.music.model.User;
 
 import com.music.repository.UserRepository;
+import com.music.security.JwtUtil;
 
-import com.music.service.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,11 +33,7 @@ public class AuthController {
     @PostMapping("/signup")
     public String signup(@RequestBody User user) {
 
-        // Encode password
-
         user.setPassword( passwordEncoder.encode(user.getPassword()));
-
-        // Default role
 
         user.setRole(Role.USER);
 
@@ -47,55 +43,27 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(
-            @RequestBody User user
-    ) {
+    public Map<String, String> login(@RequestBody User user) {
 
-        User dbUser = userRepository
-
-                .findByEmail(user.getEmail())
-
-                .orElseThrow(() ->
-
-                        new RuntimeException(
-                                "User not found"
-                        )
+        User dbUser = userRepository.findByEmail(user.getEmail())
+        		.orElseThrow(() ->
+                        new RuntimeException("User not found" )
                 );
 
-        if(
+        if(!passwordEncoder.matches(user.getPassword(),dbUser.getPassword())) {
 
-            !passwordEncoder.matches(
-
-                user.getPassword(),
-
-                dbUser.getPassword()
-            )
-
-        ) {
-
-            throw new RuntimeException(
-                    "Invalid password"
-            );
+            throw new RuntimeException("Invalid password");
         }
 
-        String token =
+        String token = jwtUtil.generateToken( user.getEmail() );
 
-                jwtUtil.generateToken(
-                        user.getEmail()
-                );
+        Map<String, String> response = new HashMap<>();
 
-        Map<String, String> response =
-                new HashMap<>();
+        response.put( "token", token );
 
-        response.put(
-                "token",
-                token
-        );
-
-        response.put(
-                "username",
-                dbUser.getUsername()
-        );
+        response.put( "username",  dbUser.getUsername() );
+        
+        response.put("role", dbUser.getRole().name());
 
         return response;
     }

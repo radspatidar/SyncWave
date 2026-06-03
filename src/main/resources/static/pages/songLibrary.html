@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+
+    <title>SyncWave Song Library</title>
+
+    <link rel="stylesheet" href="../css/songLibrary.css">
+
+</head>
+
+<body>
+
+<div class="library-container">
+
+    <div class="library-header">
+
+        <div>
+
+            <h1>🎵 Song Library</h1>
+
+        </div>
+
+        <button class="back-btn" onclick="goBack()"> ← Back To Room </button>
+
+    </div>
+
+    <div class="search-section">
+
+        <input type="text" id="searchInput" placeholder="Search songs..." onkeyup="filterSongs()" >
+
+    </div>
+
+    <div id="songsContainer" class="songs-grid"> </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/songLibrary.js"></script>
+
+</body>
+
+</html>

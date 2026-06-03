@@ -1,35 +1,278 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Upload Songs</title>
+<title>SyncWave Admin Dashboard</title>
+
+<link rel="stylesheet" href="../css/admin.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 </head>
 
 <body>
 
-<h1>Upload Song</h1>
+<div class="admin-layout">
 
-<input
-    type="text"
-    id="title"
-    placeholder="Song Title"
->
+    <aside class="sidebar">
 
-<input
-    type="file"
-    id="audio"
-    accept="audio/*"
->
+        <div class="logo-section">
 
-<button onclick="uploadSong()">
-    Upload
-</button>
+            <div class="logo-icon">
+                <i class="fa-solid fa-radio"></i>
+            </div>
 
+            <div>
+                <h2>SyncWave</h2>
+                <span>Admin Dashboard</span>
+            </div>
+
+        </div>
+
+        <nav class="menu">
+
+            <a href="#overview" class="menu-item active">
+                <i class="fa-solid fa-table-cells-large"></i> 
+                Overview
+            </a>
+
+            <a href="#users" class="menu-item">
+                <i class="fa-solid fa-users"></i>
+                Users
+            </a>
+
+            <a href="#rooms" class="menu-item">
+                <i class="fa-solid fa-tower-broadcast"></i>
+                Rooms
+            </a>
+
+            <a href="#songs" class="menu-item">
+                <i class="fa-solid fa-music"></i>
+                Songs
+            </a>
+
+        </nav>
+
+        <button onclick="openUploadModal()" class="upload-song-btn">
+		    <i class="fa-solid fa-upload"></i>
+		    Upload Song
+		</button>
+
+        <button class="logout-btn" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </button>
+
+    </aside>
+
+    <main class="content">
+
+        <div class="page-header">
+
+            <h1>Overview</h1>
+
+            <p>Manage your SyncWave platform</p>
+
+        </div>
+
+        <!-- STATS -->
+
+       <section id="overview" class="page-section">
+
+            <div class="stats-grid">
+	            <div class="stat-card">
+
+                    <div>
+                        <h3>Total Users</h3>
+                        <h2 id="totalUsers">0</h2>
+                    </div>
+
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                </div>
+            	
+            	<div class="stat-card">
+
+                    <div>
+                        <h3>Total Rooms</h3>
+                        <h2 id="totalRooms">0</h2>
+                    </div>
+
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-radio"></i>
+                    </div>
+
+                </div>
+                
+                <div class="stat-card">
+
+                    <div>
+                        <h3>Total Songs</h3>
+                        <h2 id="totalSongs">0</h2>
+                    </div>
+
+                    <div class="stat-icon pink">
+                        <i class="fa-solid fa-music"></i>
+                    </div>
+
+                </div>
+			
+			</div>
+		
+		    <h2 class="section-title">
+		        Active Room Monitor
+		    </h2>
+		
+		    <div id="activeRoomsContainer"></div>
+
+        </section>
+
+        <section id="users" class="page-section" style="display:none;">
+
+            <h2 class="section-title">User Management</h2>
+
+            <table id="usersTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            
+        </section>
+
+
+      <section id="rooms" class="page-section" style="display:none;">
+            <h2 class="section-title">Room Management</h2>
+            <table id="roomsTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Room Code</th>
+                    <th>Members</th>
+                    <th>Current Song</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </section>
+
+       <section id="songs" class="page-section" style="display:none;">
+       
+            <h2 class="section-title">Song Management</h2>
+            <table id="songsTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Song Title</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+            </table>
+            
+        </section>
+        
+    </main>
+
+</div>
+
+
+<div id="membersModal" class="modal-overlay">
+
+    <div class="members-modal">
+
+        <div class="modal-header">
+            <h2>Room Members</h2>
+
+            <button onclick="closeMembersModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="membersList" class="members-list">
+
+        </div>
+
+        <div class="modal-footer">
+            <button onclick="closeMembersModal()" class="close-btn">
+                Close
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="uploadModal" class="modal-overlay">
+
+    <div class="upload-modal">
+
+        <div class="modal-header">
+
+            <div class="header-left">
+
+                <div class="song-icon">
+                    <i class="fa-solid fa-music"></i>
+                </div>
+
+                <h2>Upload Song</h2>
+
+            </div>
+
+            <button onclick="closeUploadModal()" class="close-icon">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+        <form id="uploadForm">
+
+            <div class="form-group">
+
+                <label>Song Title</label>
+
+                <input type="text" id="songTitle" placeholder="Enter song title" required >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Audio File</label>
+
+                <input type="file" id="audioFile" accept="audio/*" required >
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="cancel-btn" onclick="closeUploadModal()"> Cancel </button>
+
+                <button type="submit" class="upload-btn"> Upload </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script src="/js/api.js"></script>
 <script src="../js/admin.js"></script>
 
 </body>
-
 </html>

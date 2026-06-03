@@ -1,20 +1,19 @@
 package com.music.dto;
 
-import com.music.model.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomEvent {
-
-    private String type;
-    private List<UserDTO> users;
+public class RoomState {
+	
+	private Integer currentPosition;
+	private String audioUrl;
+    private double currentTime;
+    private boolean playing;
+    private long lastUpdateTime;
 }

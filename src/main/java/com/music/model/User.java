@@ -1,7 +1,5 @@
 package com.music.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -18,19 +16,13 @@ public class User {
         strategy = GenerationType.IDENTITY
     )
     private Long id;
-
     private String username;
-
     private String email;
-
     private String password;
 
     @Enumerated(
         EnumType.STRING
     )
-    private Role role;
-
-	
-    
+    private Role role;   
     
 }

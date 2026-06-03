@@ -1,20 +1,18 @@
 package com.music.dto;
 
-import com.music.model.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomEvent {
+public class UserDTO {
 
-    private String type;
-    private List<UserDTO> users;
+    private Long id;
+
+    private String username;
+    
 }

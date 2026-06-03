@@ -5,102 +5,90 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
 
     <title>SyncWave Room</title>
 
-    <link
-        rel="stylesheet"
-        href="../css/room.css"
-    >
+    <link rel="stylesheet" href="../css/room.css">
 
 </head>
 
 <body>
 
-<div class="room-container">
+<div class="room-layout">
 
-    <div class="room-card">
+    <div class="sidebar">
 
-        <!-- HEADER -->
-
-        <div class="room-header">
+        <div class="logo-section">
+            <div class="logo-icon">🎵</div>
 
             <div>
-
-                <h1>🎵 SyncWave Room</h1>
-
-                <h2 id="roomDisplay"></h2>
-
+                <h2>SyncWave</h2>
+                <p>Listening together</p>
             </div>
-
-            <div class="room-actions">
-
-                <button onclick="leaveRoom()">
-                   Leave
-                </button>
-
-                <button onclick="logout()">
-                    Logout
-                </button>
-
-            </div>
-
         </div>
 
-        <!-- SEARCH -->
-
-        <div class="song-search">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search Songs"
-            >
-
-            <button onclick="searchSongs()">
-                Search
-            </button>
-
+        <div class="room-info-card">
+            <h4>ROOM CODE</h4>
+            <div id="roomDisplay"></div>
         </div>
-
-        <!-- SEARCH RESULTS -->
-
-        <div id="searchResults"></div>
-
-        <!-- AUDIO PLAYER -->
-
-        <div class="audio-player-section">
-
-            <audio
-                id="audioPlayer"
-                controls
-            ></audio>
-
-        </div>
-
-        <!-- MEMBERS -->
 
         <div class="members-section">
 
-            <h2>👥 Room Members</h2>
+            <h4>👥 MEMBERS</h4>
 
             <div id="membersList"></div>
 
         </div>
+        
+        <button class="library-btn" onclick="openSongLibrary()"> 🎵 Song Library </button>
 
-        <!-- QUEUE -->
+        <button class="leave-btn" onclick="leaveRoom()"> Leave Room </button>
 
-        <div class="queue-section">
+    </div>
 
-            <h2>🎶 Song Queue</h2>
+  
+    <div class="main-content">
+    
+        <div class="content-card">
 
-            <div id="queueList"></div>
+            <h4>SEARCH SONGS</h4>
+
+            <div class="song-search">
+
+                <input type="text" id="searchInput" placeholder="Search by song title...">
+
+                <button onclick="searchSongs()"> Search </button>
+
+            </div>
+
+            <div id="searchResults"></div>
 
         </div>
+		
+		<div class="audio-player-section">
+
+    		<div class="player-wrapper">
+
+        	<audio id="audioPlayer" controls></audio>
+
+    	</div>
+
+	</div>
+
+       
+    <div class="content-card">
+		<div class="queue-header">
+
+        	<h2>🎶 Song Queue</h2>
+
+            <button id="repeatBtn" onclick="toggleRepeat()"> 🔁 Repeat OFF </button>
+
+        </div>
+
+        <div id="queueList"></div>
+
+     </div>
 
     </div>
 
@@ -109,6 +97,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script src="/js/api.js"></script>
 
 <script src="../js/room.js"></script>
 
