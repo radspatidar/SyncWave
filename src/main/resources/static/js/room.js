@@ -101,13 +101,13 @@ function handleMusicEvent(data) {
 			}
 			
 			applyRemoteAction(() => {
-				   audioPlayer.pause(); 
-			       currentTrackUrl = data.audioUrl;
-			       audioPlayer.src = data.audioUrl;
-			       audioPlayer.currentTime = data.currentTime || 0;
-				   audioPlayer.load();
-			       audioPlayer.play().catch(() => {});
-			   });
+				if(audioPlayer.src !== data.audioUrl){
+					audioPlayer.src = data.audioUrl;
+				}
+			    currentTrackUrl = data.audioUrl;
+			    audioPlayer.currentTime = data.currentTime || 0;
+			    audioPlayer.play().catch(() => {});
+			 });
 			   
             break;
 
@@ -182,6 +182,7 @@ async function loadQueue() {
 
 
 function playQueueSong(songId) {
+	console.log("PLAY QUEUE SONG CALLED", songId);
 	const song = roomQueue.find( s => s.id === songId );
 	if(!song) return;
 	currentSongId = song.id;
@@ -263,14 +264,6 @@ audioPlayer.addEventListener( "pause",
     () => {
 		console.log("PAUSE EVENT FIRED");
 		if (syncLock) return;
-		audioPlayer.addEventListener( "play",
-		    () => {
-				console.log("play event fired");
-				if (syncLock) return;
-				sendMusicEvent("PLAY");
-		    }
-		);
-
 		sendMusicEvent("PAUSE");
     }
 );

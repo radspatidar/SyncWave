@@ -380,8 +380,6 @@ function closeUploadModal() {
 }
 
 window.onload = () => {
-	
-	document.getElementById("uploadForm").addEventListener("submit", uploadSong);
     loadStats();
     loadUsers();
     loadRooms();

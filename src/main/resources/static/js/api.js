@@ -14,14 +14,8 @@ async function apiFetch(url, options = {}) {
 		        ...authHeaders(),
 		        ...(options.headers || {})
 		    };
-			
-			console.log("TOKEN =", localStorage.getItem("token"));
-
 		    const response = await fetch( API + url , options);
 			
-			console.log("STATUS =", response.status);
-			console.log("URL =", response.url);
-
 		    if (response.status === 401) {
 
 		        localStorage.removeItem("token");
