@@ -51,7 +51,7 @@ src/main/java/com/music/
 │   ├── QueueController.java       # Queue management REST endpoints
 │   ├── RoomController.java        # Room create/join/leave/state endpoints
 │   ├── SongController.java        # Song upload & listing
-│   └── UserController.java        # User profile
+│   └── UserController.java        # User management
 ├── dto/                           # Data Transfer Objects
 ├── model/                         # JPA Entities (User, Room, RoomMember, Song, SongQueue)
 ├── repository/                    # Spring Data JPA repositories
@@ -101,7 +101,7 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret
 - Java 17+
 - Maven 3.8+
 - PostgreSQL
-- (Optional) Docker
+- Docker
 
 ### Run Locally
 
