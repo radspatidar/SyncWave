@@ -3,9 +3,6 @@
 > **Listen together, in perfect sync.**  
 > SyncWave is a real-time collaborative music listening platform where users can create or join rooms, manage a shared song queue, and experience perfectly synchronized playback — all powered by WebSockets.
 
-🔗 **Live demo:** [https://syncwave-0.onrender.com](https://syncwave-1-o5ia.onrender.com/)
-*(hosted on Render's free tier — the first request after inactivity may take a few seconds to wake up)*
-
 ---
 
 ## ✨ Features
